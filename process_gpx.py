@@ -10,22 +10,25 @@ def haversine(lat1, lon1, lat2, lon2):
     a = math.sin(dphi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2)**2
     return 2 * R * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-def parse_gpx(file_path):
+def parse_gpx(file_path, reverse=False):
     tree = ET.parse(file_path)
     root = tree.getroot()
 
     # Handle namespaces
     ns = {'gpx': 'http://www.topografix.com/GPX/1/1'}
 
+    raw_points = root.findall('.//gpx:trkpt', ns)
+
+    if reverse:
+        raw_points = raw_points[::-1]
+        print("Reversing route points...")
+
     track_points = []
     total_dist = 0
     prev_pt = None
 
-    # We'll downsample to keep the JS fast, but keep enough for a good profile
-    # 7434 points is a lot for a simple static page. Let's aim for ~500-1000.
+    # Step for downsampling
     step = 7
-
-    raw_points = root.findall('.//gpx:trkpt', ns)
 
     for i, trkpt in enumerate(raw_points):
         lat = float(trkpt.get('lat'))
@@ -49,7 +52,8 @@ def parse_gpx(file_path):
 
     return track_points
 
-data = parse_gpx('IMRA Beara Way Ultra.gpx')
+# 2025 direction is CCW, so we reverse the CW GPX
+data = parse_gpx('IMRA Beara Way Ultra.gpx', reverse=True)
 with open('route_data.json', 'w') as f:
     json.dump(data, f)
 
