@@ -116,7 +116,7 @@
 
     <div class="container">
         <section id="map-section">
-            <h2>Schematic Race Map</h2>
+            <h2>Race Map</h2>
             <div id="map" class="map-container">
                 <!-- SVG Map will be rendered here -->
             </div>
@@ -252,26 +252,14 @@
             const getX = lon => padding + (lon - minLon) * scale;
             const getY = lat => height - (padding + (lat - minLat) * scale);
 
-            // Schematic path with simplified snapping
+            // Geographic path (reverted from schematic)
             let pathData = `M ${getX(points[0].lon)} ${getY(points[0].lat)}`;
-            // Use a higher downsampling for a cleaner, more schematic look
-            for (let i = 1; i < points.length; i += 4) {
-                const p = points[i];
-                let tx = getX(p.lon);
-                let ty = getY(p.lat);
-                // Offset the loop area (KM 120 to 155) to avoid overlap
-                if (p.dist > 120000 && p.dist < 155000) {
-                    tx -= 40; ty += 40;
-                    if (p.dist > 130100) { tx += 12; ty -= 12; }
-                }
-                pathData += ` L ${tx} ${ty}`;
+            for (let i = 1; i < points.length; i++) {
+                pathData += ` L ${getX(points[i].lon)} ${getY(points[i].lat)}`;
             }
-            // Ensure the last point is connected
-            const lastP = points[points.length-1];
-            pathData += ` L ${getX(lastP.lon)} ${getY(lastP.lat)}`;
 
             let svgHtml = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-                <path d="${pathData}" fill="none" stroke="#00b894" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" />`;
+                <path d="${pathData}" fill="none" stroke="#00b894" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />`;
 
             aidStations.forEach((as, i) => {
                 const targetDist = as.km * 1000;
@@ -284,31 +272,22 @@
 
                 let px = getX(closest.lon);
                 let py = getY(closest.lat);
-                if (closest.dist > 120000 && closest.dist < 155000) {
-                    px -= 40; py += 40;
-                    if (closest.dist > 130100) { px += 12; py -= 12; }
-                }
 
                 let textAnchor = "start";
-                let dx = 10;
+                let dx = 8;
                 let dy = 4;
 
-                // Manual adjustments for map label legibility
-                if (as.location.includes("Finish")) { dy = 24; dx = 0; textAnchor = "middle"; }
-                else if (as.location.includes("Start")) { dy = -18; dx = 0; textAnchor = "middle"; }
-                else if (as.location.includes("Dursey")) { dy = 22; textAnchor = "middle"; dx = 0; }
-                else if (as.location === "Allihies Village" && as.km > 120) { dx = -18; textAnchor = "end"; dy = 6; }
-                else if (as.location === "Allihies Village" && as.km < 120) { dx = 18; textAnchor = "start"; dy = 6; }
-                else if (as.location === "Gleninchaquin") { dy = -12; dx = 0; textAnchor = "middle"; }
-                else if (as.location === "Lauragh Church Carpark") { dy = 18; dx = 5; textAnchor = "start"; }
-                else if (as.location === "Ardgroom Village") { dy = -12; dx = 0; textAnchor = "middle"; }
-                else if (as.location.includes("Adrigole")) { dy = 12; dx = 12; textAnchor = "start"; }
-                else if (as.location.includes("Eyeries")) { dx = -12; textAnchor = "end"; dy = 4; }
-                else if (as.location.includes("Dromoghty")) { dy = -12; dx = 0; textAnchor = "middle"; }
-                else if (as.location.includes("Glengarriff")) { dx = -12; textAnchor = "end"; dy = 4; }
+                // Adjustments for map label legibility
+                if (as.location.includes("Finish")) { dy = 20; dx = 0; textAnchor = "middle"; }
+                else if (as.location.includes("Start")) { dy = -12; dx = 0; textAnchor = "middle"; }
+                else if (as.location.includes("Dursey")) { dy = 18; textAnchor = "middle"; dx = 0; }
+                else if (as.location === "Allihies Village" && as.km > 120) { dx = -10; textAnchor = "end"; }
+                else if (as.location === "Eyeries Village Hall") { dx = -10; textAnchor = "end"; }
+                else if (as.location === "Glengarriff Village") { dx = -10; textAnchor = "end"; }
+                else if (as.location === "Lauragh Church Carpark") { dy = -10; textAnchor = "middle"; dx = 0; }
 
-                svgHtml += `<circle cx="${px}" cy="${py}" r="5" fill="white" stroke="#00b894" stroke-width="2" />`;
-                svgHtml += `<text x="${px + dx}" y="${py + dy}" text-anchor="${textAnchor}" font-size="11" font-family="Space Grotesk" font-weight="600" fill="#2d3436">${as.location}</text>`;
+                svgHtml += `<circle cx="${px}" cy="${py}" r="4" fill="white" stroke="#00b894" stroke-width="2" />`;
+                svgHtml += `<text x="${px + dx}" y="${py + dy}" text-anchor="${textAnchor}" font-size="10" font-family="Space Grotesk" font-weight="600" fill="#2d3436">${as.location}</text>`;
             });
 
             svgHtml += `</svg>`;
