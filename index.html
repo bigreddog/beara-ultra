@@ -135,7 +135,7 @@
 <body>
     <header>
         <h1>Beara Way Ultra</h1>
-        <p>161km • 3700m+ • Castletownbere, West Cork</p>
+        <p>161km • 5500m+ • Castletownbere, West Cork</p>
     </header>
 
     <div class="container">
@@ -160,8 +160,8 @@
                 <label for="finish-goal">Finish Time Goal (hours):</label>
                 <input type="number" id="finish-goal" value="32" step="0.5" min="20" max="60">
                 <div class="formula">
-                    Formula: Time = Effort Distance × Adjusted Pace.
-                    (Effort Distance = Distance + Elevation Gain / 100)
+                    Formula: T = Goal × (d / D)¹·⁰⁷ using Riegel's model for fatigue.
+                    (Effort Distance d = KM + Gain / 100)
                 </div>
             </div>
 
@@ -266,10 +266,11 @@
         function updatePredictions() {
             const goalHours = parseFloat(document.getElementById('finish-goal').value) || 32;
             const totalEffortDist = aidStations[aidStations.length - 1].effortDist;
-            const pace = goalHours / totalEffortDist;
+            const k = 1.07; // Fatigue factor
 
             aidStations.forEach((as, i) => {
-                const predictedHours = as.effortDist * pace;
+                // Riegel's Formula for cumulative time: T = Goal * (d / D)^k
+                const predictedHours = goalHours * Math.pow(as.effortDist / totalEffortDist, k);
                 const cell = document.getElementById(`pred-${i}`);
                 if (cell) {
                     cell.innerText = i === 0 ? "12:00 Fri" : formatArrivalTime(predictedHours);
@@ -396,7 +397,7 @@
             const width = elDiv.clientWidth;
             const height = elDiv.clientHeight;
             const paddingSide = 80;
-            const paddingTop = 180;
+            const paddingTop = 220;
             const paddingBottom = 50;
 
             const points = routeData.points;
@@ -447,7 +448,7 @@
                 svgHtml += `<circle cx="${px}" cy="${py}" r="5" fill="#2d3436" stroke="white" stroke-width="2" />`;
 
                 // Rotated labels at the top - alternate heights to avoid overlap
-                const labelY = paddingTop - (index % 2 === 0 ? 15 : 100);
+                const labelY = paddingTop - (index % 2 === 0 ? 20 : 120);
                 const isMain = as.type.includes("Main") || as.type === "Start" || as.type === "Finish";
                 // Use text-anchor to avoid clipping on edges
                 const anchor = px > width - 100 ? "end" : "start";
