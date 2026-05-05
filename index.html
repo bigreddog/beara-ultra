@@ -59,6 +59,30 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
+        .goal-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .goal-container input {
+            padding: 0.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 1.1rem;
+            width: 80px;
+            font-family: var(--font-heading);
+            font-weight: 600;
+        }
+
+        .formula {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+
         .map-container, .elevation-container {
             width: 100%;
             height: 500px;
@@ -131,6 +155,16 @@
 
         <section id="aid-stations">
             <h2>Aid Stations & Cut-offs</h2>
+
+            <div class="goal-container">
+                <label for="finish-goal">Finish Time Goal (hours):</label>
+                <input type="number" id="finish-goal" value="32" step="0.5" min="20" max="60">
+                <div class="formula">
+                    Formula: Time = Effort Distance × Adjusted Pace.
+                    (Effort Distance = Distance + Elevation Gain / 100)
+                </div>
+            </div>
+
             <div id="table-container">
                 <!-- Table will be rendered here -->
             </div>
@@ -193,36 +227,96 @@
         The ultra route passes shops and pubs in the villages along the way.
         Shops and pubs are in Allihies village (shops and pubs), Eyeries village (shops and pubs), Ardgroom village (shops and pubs), Lauragh (fancy restaurant), Glengarriff (shops, pubs, and chipper), Adrigole (shop).`;
 
+        // --- Prediction Logic ---
+        function calculateEffortDistances() {
+            const points = routeData.points;
+            let currentGain = 0;
+
+            // Pre-calculate cumulative elevation gain for all points
+            points[0].gain = 0;
+            for (let i = 1; i < points.length; i++) {
+                const diff = points[i].ele - points[i-1].ele;
+                if (diff > 0) currentGain += diff;
+                points[i].gain = currentGain;
+            }
+
+            aidStations.forEach(as => {
+                const targetDist = as.km * 1000;
+                let closest = points[0];
+                let minDiff = Math.abs(points[0].dist - targetDist);
+                points.forEach(p => {
+                    const diff = Math.abs(p.dist - targetDist);
+                    if (diff < minDiff) { minDiff = diff; closest = p; }
+                });
+                as.gain = closest.gain;
+                as.effortDist = as.km + (as.gain / 100);
+            });
+        }
+
+        function formatArrivalTime(hoursFromStart) {
+            const start = new Date("2024-05-24T12:00:00"); // Assuming a Friday start at noon
+            const arrival = new Date(start.getTime() + hoursFromStart * 60 * 60 * 1000);
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const day = days[arrival.getDay()];
+            const hours = arrival.getHours().toString().padStart(2, '0');
+            const minutes = arrival.getMinutes().toString().padStart(2, '0');
+            return `${day} ${hours}:${minutes}`;
+        }
+
+        function updatePredictions() {
+            const goalHours = parseFloat(document.getElementById('finish-goal').value) || 32;
+            const totalEffortDist = aidStations[aidStations.length - 1].effortDist;
+            const pace = goalHours / totalEffortDist;
+
+            aidStations.forEach((as, i) => {
+                const predictedHours = as.effortDist * pace;
+                const cell = document.getElementById(`pred-${i}`);
+                if (cell) {
+                    cell.innerText = i === 0 ? "12:00 Fri" : formatArrivalTime(predictedHours);
+                }
+            });
+        }
+
         // Render Aid Station Table
-        const tableContainer = document.getElementById('table-container');
-        let tableHtml = `<table>
-            <thead>
-                <tr>
-                    <th>KM</th>
-                    <th>Location</th>
-                    <th>Type</th>
-                    <th>Refreshments</th>
-                    <th>Drop Bag</th>
-                    <th>Shops/Pubs</th>
-                    <th>Cut-off</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        aidStations.forEach(as => {
-            tableHtml += `<tr>
-                <td>${as.km}</td>
-                <td>${as.location}</td>
-                <td>${as.type}</td>
-                <td>${as.refreshments}</td>
-                <td>${as.dropbag}</td>
-                <td>${as.shops || "-"}</td>
-                <td><span class="highlight">${as.cutoff}</span></td>
-                <td>${as.notes || ""}</td>
-            </tr>`;
-        });
-        tableHtml += '</tbody></table>';
-        tableContainer.innerHTML = tableHtml;
+        function renderTable() {
+            calculateEffortDistances();
+            const tableContainer = document.getElementById('table-container');
+            let tableHtml = `<table>
+                <thead>
+                    <tr>
+                        <th>KM</th>
+                        <th>Location</th>
+                        <th>Predicted Arrival</th>
+                        <th>Type</th>
+                        <th>Refreshments</th>
+                        <th>Drop Bag</th>
+                        <th>Shops/Pubs</th>
+                        <th>Cut-off</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            aidStations.forEach((as, i) => {
+                tableHtml += `<tr>
+                    <td>${as.km}</td>
+                    <td>${as.location}</td>
+                    <td id="pred-${i}" class="highlight">-</td>
+                    <td>${as.type}</td>
+                    <td>${as.refreshments}</td>
+                    <td>${as.dropbag}</td>
+                    <td>${as.shops || "-"}</td>
+                    <td><span class="highlight">${as.cutoff}</span></td>
+                    <td>${as.notes || ""}</td>
+                </tr>`;
+            });
+            tableHtml += '</tbody></table>';
+            tableContainer.innerHTML = tableHtml;
+            updatePredictions();
+
+            document.getElementById('finish-goal').addEventListener('input', updatePredictions);
+        }
+
+        renderTable();
 
         // Render Instructions
         const formattedInstructions = organisersInstructions
