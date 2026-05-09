@@ -1,25 +1,26 @@
 const stops = [
     { name: "Castletownbere", km: 0, type: "start", clock: "12:00 Fri", elapsed: "0h", food: "Start Line", db: null },
-    { name: "Ballard/Tooreenbeg", km: 10, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Ballard/Tooreenbeg", km: 10, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Adrigole (Hungry Hill)", km: 22, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks / Shop", db: null },
-    { name: "Glenlough Path", km: 30, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Glenlough Path", km: 30, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Glengarriff Village", km: 39.5, type: "main", clock: null, elapsed: null, food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs, Chipper", db: "DB 1" },
-    { name: "Bonane cross roads", km: 50, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Bonane cross roads", km: 50, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Dromoghty", km: 55, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
     { name: "Gleninchaquin", km: 65, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
     { name: "Lauragh Church", km: 73.8, type: "main", clock: "04:00 Sat", elapsed: "16h", food: "T/C, W, Snacks, Coke, Sweets / Fancy Restaurant", db: "DB 2" },
-    { name: "Coolownig County Bounds", km: 76, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Coolownig County Bounds", km: 81.5, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Ardgroom Village", km: 88, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks / Shops, Pubs", db: null },
-    { name: "Faunkill road junction", km: 92, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Faunkill road junction", km: 92, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Eyeries Village", km: 101.4, type: "main", clock: "11:00 Sat", elapsed: "23h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 3" },
-    { name: "Urhin Bridal Path", km: 108, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Urhin Bridal Path", km: 108, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Allihies Village (1)", km: 115.8, type: "main", clock: "15:00 Sat", elapsed: "27h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
-    { name: "Firkeel Gap crossroads", km: 122, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Firkeel Gap crossroads", km: 122, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Dursey Cable Car", km: 128.2, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
     { name: "Allihies Village (2)", km: 146.2, type: "main", clock: "21:00 Sat", elapsed: "33h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
-    { name: "Miskish Style", km: 156, type: "water", clock: null, elapsed: null, food: "Marshal, Water, Snacks", db: null },
+    { name: "Miskish Style", km: 156, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Castletownbere", km: 161, type: "finish", clock: "01:00 Sun", elapsed: "37h", food: "Sambos, Tea/Coffee", db: null }
 ];
+
 
 
 let map;
