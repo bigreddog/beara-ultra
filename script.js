@@ -1,19 +1,16 @@
 const stops = [
-    { name: "Castletownbere", km: 0, type: "start", clock: "08:00 Fri", elapsed: "0h", food: "Start Line", db: null },
-    { name: "Allihies Village (1)", km: 14.5, type: "main", clock: null, elapsed: null, food: "T/C, W, Snacks, Coke, Sweets", db: "DB 1" },
-    { name: "Firkeel Gap (1)", km: 25.5, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Dursey Cable Car", km: 31, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Firkeel Gap (2)", km: 36.5, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Allihies Village (2)", km: 44.5, type: "main", clock: null, elapsed: null, food: "T/C, W, Snacks, Coke, Sweets", db: "DB 1" },
-    { name: "Eyeries Village", km: 59.5, type: "main", clock: "19:00 Fri", elapsed: "11h", food: "T/C, W, Snacks, Coke, Sweets", db: "DB 2" },
-    { name: "Ardgroom Village", km: 73, type: "water", clock: null, elapsed: null, food: "Water / Pubs", db: null },
-    { name: "Lauragh Church", km: 87, type: "main", clock: "02:00 Sat", elapsed: "18h", food: "Hot Food, Snacks, Drinks", db: "DB 3" },
-    { name: "Gleninchaquin", km: 96, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Dromoghty", km: 104, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Glengarriff Village", km: 121.5, type: "main", clock: "12:00 Sat", elapsed: "28h", food: "T/C, W, Snacks, Coke, Sweets", db: "DB 3" },
-    { name: "Adrigole (Hungry Hill)", km: 139, type: "main", clock: "16:00 Sat", elapsed: "32h", food: "T/C, W, Snacks, Coke, Sweets", db: "DB 3" },
-    { name: "Rossmackowen", km: 149.5, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Castletownbere", km: 161, type: "finish", clock: "21:00 Sat", elapsed: "37h", food: "Sambos, Tea/Coffee", db: null }
+    { name: "Castletownbere", km: 0, type: "start", clock: "12:00 Fri", elapsed: "0h", food: "Start Line", db: null },
+    { name: "Adrigole (Hungry Hill)", km: 20, type: "water", clock: null, elapsed: null, food: "Water / Shop", db: null },
+    { name: "Glengarriff Village", km: 40, type: "main", clock: null, elapsed: null, food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs, Chipper", db: "DB 1" },
+    { name: "Dromoghty", km: 55, type: "water", clock: null, elapsed: null, food: "Water", db: null },
+    { name: "Gleninchaquin", km: 65, type: "water", clock: null, elapsed: null, food: "Water", db: null },
+    { name: "Lauragh Church", km: 70, type: "main", clock: "04:00 Sat", elapsed: "16h", food: "T/C, W, Snacks, Coke, Sweets / Fancy Restaurant", db: "DB 2" },
+    { name: "Ardgroom Village", km: 85, type: "water", clock: null, elapsed: null, food: "Water / Shops, Pubs", db: null },
+    { name: "Eyeries Village", km: 100, type: "main", clock: "11:00 Sat", elapsed: "23h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 3" },
+    { name: "Allihies Village (1)", km: 115, type: "main", clock: "15:00 Sat", elapsed: "27h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
+    { name: "Dursey Cable Car", km: 130, type: "water", clock: null, elapsed: null, food: "Water", db: null },
+    { name: "Allihies Village (2)", km: 145, type: "main", clock: "21:00 Sat", elapsed: "33h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
+    { name: "Castletownbere", km: 161, type: "finish", clock: "01:00 Sun", elapsed: "37h", food: "Sambos, Tea/Coffee", db: null }
 ];
 
 let map;
@@ -213,7 +210,8 @@ function getSectionsData() {
             elevationLoss: Math.round(eleLoss),
             cumLoss: cumulativeLoss,
             cutoff: endStop.clock || '-',
-            aidStations: endStop.food
+            aidStations: endStop.food,
+            db: endStop.db || '-'
         });
     }
     cachedSections = sections;
@@ -221,7 +219,7 @@ function getSectionsData() {
 }
 
 function formatTimeOfDay(hours) {
-    const raceStartHour = 8; // Race starts at 08:00 Fri
+    const raceStartHour = 12; // Race starts at 12:00 Fri
     const totalHours = raceStartHour + hours;
 
     const days = ["Fri", "Sat", "Sun", "Mon"];
@@ -292,6 +290,7 @@ function populateTable(t2 = null) {
             <td>${estElapsedStr}</td>
             <td>${estArrivalStr}</td>
             <td>${section.cutoff}</td>
+            <td>${section.db}</td>
             <td>${section.aidStations}</td>
         `;
         tableBody.appendChild(row);
