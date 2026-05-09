@@ -1,15 +1,15 @@
 const stops = [
     { name: "Castletownbere", km: 0, type: "start", clock: "12:00 Fri", elapsed: "0h", food: "Start Line", db: null },
-    { name: "Adrigole (Hungry Hill)", km: 20, type: "water", clock: null, elapsed: null, food: "Water / Shop", db: null },
-    { name: "Glengarriff Village", km: 40, type: "main", clock: null, elapsed: null, food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs, Chipper", db: "DB 1" },
+    { name: "Adrigole (Hungry Hill)", km: 22, type: "water", clock: null, elapsed: null, food: "Water / Shop", db: null },
+    { name: "Glengarriff Village", km: 39.5, type: "main", clock: null, elapsed: null, food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs, Chipper", db: "DB 1" },
     { name: "Dromoghty", km: 55, type: "water", clock: null, elapsed: null, food: "Water", db: null },
     { name: "Gleninchaquin", km: 65, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Lauragh Church", km: 70, type: "main", clock: "04:00 Sat", elapsed: "16h", food: "T/C, W, Snacks, Coke, Sweets / Fancy Restaurant", db: "DB 2" },
-    { name: "Ardgroom Village", km: 85, type: "water", clock: null, elapsed: null, food: "Water / Shops, Pubs", db: null },
-    { name: "Eyeries Village", km: 100, type: "main", clock: "11:00 Sat", elapsed: "23h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 3" },
-    { name: "Allihies Village (1)", km: 115, type: "main", clock: "15:00 Sat", elapsed: "27h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
-    { name: "Dursey Cable Car", km: 130, type: "water", clock: null, elapsed: null, food: "Water", db: null },
-    { name: "Allihies Village (2)", km: 145, type: "main", clock: "21:00 Sat", elapsed: "33h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
+    { name: "Lauragh Church", km: 73.8, type: "main", clock: "04:00 Sat", elapsed: "16h", food: "T/C, W, Snacks, Coke, Sweets / Fancy Restaurant", db: "DB 2" },
+    { name: "Ardgroom Village", km: 88, type: "water", clock: null, elapsed: null, food: "Water / Shops, Pubs", db: null },
+    { name: "Eyeries Village", km: 101.4, type: "main", clock: "11:00 Sat", elapsed: "23h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 3" },
+    { name: "Allihies Village (1)", km: 115.8, type: "main", clock: "15:00 Sat", elapsed: "27h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
+    { name: "Dursey Cable Car", km: 128.2, type: "water", clock: null, elapsed: null, food: "Water", db: null },
+    { name: "Allihies Village (2)", km: 146.2, type: "main", clock: "21:00 Sat", elapsed: "33h", food: "T/C, W, Snacks, Coke, Sweets / Shops, Pubs", db: "DB 4" },
     { name: "Castletownbere", km: 161, type: "finish", clock: "01:00 Sun", elapsed: "37h", food: "Sambos, Tea/Coffee", db: null }
 ];
 
