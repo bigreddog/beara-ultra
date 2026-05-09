@@ -32,6 +32,27 @@
 
         <section id="table-section">
             <h2>Section Summary</h2>
+            <div class="calculator" style="margin-bottom: 20px;">
+                <h3>Projected Finish Time Calculator</h3>
+                <p>Calculate your projected finish time using Riegel's formula to drive estimated arrival times in the table.</p>
+                <div class="input-group">
+                    <label for="d1">Known Distance (km):</label>
+                    <input type="number" id="d1" value="100" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="t1">Time for Known Distance (hours):</label>
+                    <input type="number" id="t1" value="15" step="0.1">
+                </div>
+                <div class="input-group" style="display: none;">
+                    <label for="d2">Target Distance (km):</label>
+                    <input type="number" id="d2" value="161" step="1" readonly>
+                </div>
+                <button id="calc-btn">Calculate Finish Time & Update Table</button>
+                <div id="calc-result" class="result-box">
+                    Projected Finish Time: <span id="projected-time">-</span>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table id="summaryTable">
                     <thead>
@@ -44,6 +65,8 @@
                             <th>Cumulative Elevation Gain (m+)</th>
                             <th>Elevation Loss (m-)</th>
                             <th>Cumulative Elevation Loss (m-)</th>
+                            <th>Est Elapsed Time</th>
+                            <th>Est Arrival Time</th>
                             <th>Cutoff Time</th>
                             <th>Aid Stations / Shops / Pubs</th>
                         </tr>
@@ -52,29 +75,6 @@
                         <!-- Rows will be populated by JavaScript -->
                     </tbody>
                 </table>
-            </div>
-        </section>
-
-        <section id="calculator-section">
-            <h2>Projected Finish Time Calculator</h2>
-            <p>Calculate your projected finish time using Riegel's formula.</p>
-            <div class="calculator">
-                <div class="input-group">
-                    <label for="d1">Known Distance (km):</label>
-                    <input type="number" id="d1" value="100" step="1">
-                </div>
-                <div class="input-group">
-                    <label for="t1">Time for Known Distance (hours):</label>
-                    <input type="number" id="t1" value="15" step="0.1">
-                </div>
-                <div class="input-group">
-                    <label for="d2">Target Distance (km):</label>
-                    <input type="number" id="d2" value="161" step="1" readonly>
-                </div>
-                <button id="calc-btn">Calculate Finish Time</button>
-                <div id="calc-result" class="result-box">
-                    Projected Time: <span id="projected-time">-</span>
-                </div>
             </div>
         </section>
     </main>

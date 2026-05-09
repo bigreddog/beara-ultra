@@ -43,6 +43,45 @@ function renderElevationChart() {
     const distances = sampledData.map(d => d.dist.toFixed(1));
     const elevations = sampledData.map(d => d.ele);
 
+    // Plugin to draw vertical lines at section boundaries
+    const verticalLinePlugin = {
+        id: 'verticalLines',
+        afterDraw: (chart) => {
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+
+            stops.forEach(stop => {
+                if (stop.km > 0 && stop.km < 161) {
+                    // Find closest label index to this distance
+                    let closestIndex = 0;
+                    let minDiff = Math.abs(parseFloat(chart.data.labels[0]) - stop.km);
+
+                    for (let i = 1; i < chart.data.labels.length; i++) {
+                        let diff = Math.abs(parseFloat(chart.data.labels[i]) - stop.km);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closestIndex = i;
+                        }
+                    }
+
+                    const x = xAxis.getPixelForTick(closestIndex);
+                    ctx.moveTo(x, yAxis.top);
+                    ctx.lineTo(x, yAxis.bottom);
+                }
+            });
+
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+
     const ctx = document.getElementById('elevationChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -88,7 +127,8 @@ function renderElevationChart() {
                     }
                 }
             }
-        }
+        },
+        plugins: [verticalLinePlugin]
     });
 }
 
@@ -129,9 +169,17 @@ function addAidStationMarkers() {
     });
 }
 
-function populateTable() {
+let cachedSections = [];
+
+function getSectionsData() {
+    if (cachedSections.length > 0) return cachedSections;
+
     let currentRoutePointIndex = 0;
     const sections = [];
+
+    let cumulativeDistance = 0;
+    let cumulativeGain = 0;
+    let cumulativeLoss = 0;
 
     for (let i = 0; i < stops.length - 1; i++) {
         const startStop = stops[i];
@@ -150,37 +198,99 @@ function populateTable() {
 
         currentRoutePointIndex = endIndex;
 
+        let sectionDistance = endStop.km - startStop.km;
+        cumulativeDistance += sectionDistance;
+        cumulativeGain += Math.round(eleGain);
+        cumulativeLoss += Math.round(eleLoss);
+
         sections.push({
             section: i + 1,
             startEnd: startStop.name + ' - ' + endStop.name,
-            distance: endStop.km - startStop.km,
+            distance: sectionDistance,
+            cumDistance: cumulativeDistance,
             elevationGain: Math.round(eleGain),
+            cumGain: cumulativeGain,
             elevationLoss: Math.round(eleLoss),
+            cumLoss: cumulativeLoss,
             cutoff: endStop.clock || '-',
             aidStations: endStop.food
         });
     }
+    cachedSections = sections;
+    return cachedSections;
+}
 
+function formatTimeOfDay(hours) {
+    const raceStartHour = 8; // Race starts at 08:00 Fri
+    const totalHours = raceStartHour + hours;
+
+    const days = ["Fri", "Sat", "Sun", "Mon"];
+    let dayIndex = Math.floor(totalHours / 24);
+
+    let h = Math.floor(totalHours % 24);
+    let m = Math.round((totalHours - Math.floor(totalHours)) * 60);
+
+    if (m === 60) {
+        m = 0;
+        h += 1;
+        if (h === 24) {
+            h = 0;
+            dayIndex += 1;
+        }
+    }
+
+    const dayStr = days[Math.min(dayIndex, days.length - 1)];
+
+    const padH = h.toString().padStart(2, '0');
+    const padM = m.toString().padStart(2, '0');
+
+    return `${dayStr} ${padH}:${padM}`;
+}
+
+function formatElapsed(hours) {
+    let h = Math.floor(hours);
+    let m = Math.round((hours - h) * 60);
+    if (m === 60) {
+        m = 0;
+        h += 1;
+    }
+    return `${h}h ${m.toString().padStart(2, '0')}m`;
+}
+
+function populateTable(t2 = null) {
+    const sections = getSectionsData();
     const tableBody = document.querySelector("#summaryTable tbody");
-    let cumulativeDistance = 0;
-    let cumulativeGain = 0;
-    let cumulativeLoss = 0;
+    tableBody.innerHTML = '';
+
+    let D = 0;
+    if (sections.length > 0) {
+        const lastSec = sections[sections.length - 1];
+        D = lastSec.cumDistance + (lastSec.cumGain / 100);
+    }
 
     sections.forEach(section => {
-        cumulativeDistance += section.distance;
-        cumulativeGain += section.elevationGain;
-        cumulativeLoss += section.elevationLoss;
-        const row = document.createElement("tr");
+        let estElapsedStr = "-";
+        let estArrivalStr = "-";
 
+        if (t2 !== null && D > 0) {
+            let d = section.cumDistance + (section.cumGain / 100);
+            let t = t2 * Math.pow((d / D), 1.07);
+            estElapsedStr = formatElapsed(t);
+            estArrivalStr = formatTimeOfDay(t);
+        }
+
+        const row = document.createElement("tr");
         row.innerHTML = `
             <td>${section.section}</td>
             <td>${section.startEnd}</td>
             <td>${section.distance.toFixed(1)}</td>
-            <td>${cumulativeDistance.toFixed(1)}</td>
+            <td>${section.cumDistance.toFixed(1)}</td>
             <td>${section.elevationGain}</td>
-            <td>${cumulativeGain}</td>
+            <td>${section.cumGain}</td>
             <td>${section.elevationLoss}</td>
-            <td>${cumulativeLoss}</td>
+            <td>${section.cumLoss}</td>
+            <td>${estElapsedStr}</td>
+            <td>${estArrivalStr}</td>
             <td>${section.cutoff}</td>
             <td>${section.aidStations}</td>
         `;
@@ -200,7 +310,7 @@ function initCalculator() {
             return;
         }
 
-        // Riegel's formula with fatigue factor of 1.07 (as per memory info)
+        // Riegel's formula with fatigue factor of 1.07
         const c = 1.07;
         const t2 = t1 * Math.pow((d2 / d1), c);
 
@@ -208,6 +318,7 @@ function initCalculator() {
         const minutes = Math.round((t2 - hours) * 60);
 
         document.getElementById('projected-time').textContent = `${hours} hours and ${minutes} minutes`;
+        populateTable(t2);
     });
 }
 
