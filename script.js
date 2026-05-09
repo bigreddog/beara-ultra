@@ -300,24 +300,14 @@ function populateTable(t2 = null) {
 function initCalculator() {
     const calcBtn = document.getElementById('calc-btn');
     calcBtn.addEventListener('click', () => {
-        const d1 = parseFloat(document.getElementById('d1').value);
-        const t1 = parseFloat(document.getElementById('t1').value);
-        const d2 = parseFloat(document.getElementById('d2').value);
+        const goalTime = parseFloat(document.getElementById('goalTime').value);
 
-        if (isNaN(d1) || isNaN(t1) || isNaN(d2) || d1 <= 0 || t1 <= 0) {
-            alert("Please enter valid positive numbers for known distance and time.");
+        if (isNaN(goalTime) || goalTime <= 0) {
+            alert("Please enter a valid positive number for your goal finish time.");
             return;
         }
 
-        // Riegel's formula with fatigue factor of 1.07
-        const c = 1.07;
-        const t2 = t1 * Math.pow((d2 / d1), c);
-
-        const hours = Math.floor(t2);
-        const minutes = Math.round((t2 - hours) * 60);
-
-        document.getElementById('projected-time').textContent = `${hours} hours and ${minutes} minutes`;
-        populateTable(t2);
+        populateTable(goalTime);
     });
 }
 
