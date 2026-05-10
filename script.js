@@ -40,6 +40,58 @@ function initMap() {
     const polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
     map.fitBounds(polyline.getBounds());
 
+    // Add Current Location Button
+    const LocationControl = L.Control.extend({
+        options: {
+            position: 'topleft'
+        },
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            container.style.backgroundColor = 'white';
+            container.style.width = '30px';
+            container.style.height = '30px';
+            container.style.cursor = 'pointer';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.title = 'Go to Current Location';
+
+            // Add a simple SVG crosshair icon
+            container.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
+
+            container.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                map.locate({setView: true, maxZoom: 15});
+            }
+
+            return container;
+        }
+    });
+
+    map.addControl(new LocationControl());
+
+    let locationMarker;
+    let locationCircle;
+
+    map.on('locationfound', function(e) {
+        const radius = e.accuracy / 2;
+
+        if (locationMarker) {
+            map.removeLayer(locationMarker);
+            map.removeLayer(locationCircle);
+        }
+
+        locationMarker = L.marker(e.latlng).addTo(map)
+            .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+        locationCircle = L.circle(e.latlng, radius).addTo(map);
+    });
+
+    map.on('locationerror', function(e) {
+        alert("Location access denied or unavailable: " + e.message);
+    });
+
     addAidStationMarkers();
     renderElevationChart();
 }
